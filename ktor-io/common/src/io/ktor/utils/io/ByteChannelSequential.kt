@@ -196,6 +196,7 @@ public abstract class ByteChannelSequentialBase(
         afterWrite(count)
     }
 
+    @Suppress("JS_NAME_CLASH")
     override suspend fun writeFully(src: ByteArray, offset: Int, length: Int) {
         var currentIndex = offset
         val endIndex = offset + length
@@ -211,6 +212,7 @@ public abstract class ByteChannelSequentialBase(
         }
     }
 
+    @Suppress("JS_NAME_CLASH")
     override suspend fun writeFully(memory: Memory, startIndex: Int, endIndex: Int) {
         var currentIndex = startIndex
 

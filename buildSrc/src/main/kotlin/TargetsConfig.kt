@@ -17,7 +17,8 @@ val Project.hasDesktop: Boolean get() = hasPosix || files.any { it.name == "desk
 val Project.hasNix: Boolean get() = hasPosix || hasJvmAndNix || files.any { it.name == "nix" }
 val Project.hasDarwin: Boolean get() = hasNix || files.any { it.name == "darwin" }
 val Project.hasWindows: Boolean get() = hasPosix || files.any { it.name == "windows" }
-val Project.hasJs: Boolean get() = hasCommon || files.any { it.name == "js" }
+val Project.hasJs: Boolean get() = hasCommon || files.any { it.name == "js" || it.name == "jsWasm" }
+val Project.hasWasm: Boolean get() = hasCommon || files.any { it.name == "wasm" || it.name == "jsWasm" }
 val Project.hasJvm: Boolean get() = hasCommon || hasJvmAndNix || files.any { it.name == "jvm" }
 val Project.hasNative: Boolean get() = hasCommon || hasNix || hasPosix || hasDarwin || hasDesktop || hasWindows
 
@@ -35,6 +36,15 @@ fun Project.configureTargets() {
             }
 
             configureJs()
+        }
+
+        if (hasWasm) {
+            wasm {
+                nodejs()
+                browser()
+            }
+
+            configureWasm()
         }
 
         if (hasPosix || hasDarwin || hasWindows) extra.set("hasNative", true)

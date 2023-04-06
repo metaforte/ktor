@@ -5,6 +5,7 @@
 import org.jetbrains.dokka.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.targets.js.*
+import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.konan.target.*
 
 buildscript {
@@ -93,8 +94,8 @@ apply(from = "gradle/compatibility.gradle")
 plugins {
     id("org.jetbrains.dokka") version "1.7.20" apply false
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.12.1"
-    id("kotlinx-atomicfu") version "0.19.0" apply false
-    id("com.osacky.doctor") version "0.8.1"
+    id("kotlinx-atomicfu") version "0.21.0-wasm0" apply false
+    //id("com.osacky.doctor") version "0.8.1"
 }
 
 allprojects {
@@ -108,7 +109,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven(url = "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
     }
 
     val nonDefaultProjectStructure: List<String> by rootProject.extra
@@ -224,5 +225,25 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         findByName("jvmTest")?.kotlin?.srcDirs("jvmAndNix/test")
         findByName("jvmMain")?.resources?.srcDirs("jvmAndNix/resources")
         findByName("jvmTest")?.resources?.srcDirs("jvmAndNix/test-resources")
+    }
+}
+
+allprojects.forEach {
+    it.tasks.withType<KotlinJsCompile>().configureEach {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-Xskip-prerelease-check",
+        )
+    }
+}
+
+with(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin.apply(rootProject)) {
+    nodeVersion = "20.2.0"
+}
+
+allprojects.forEach {
+    it.tasks.whenTaskAdded {
+        if (name == "compileJsWasmMainKotlinMetadata") {
+            enabled = false
+        }
     }
 }

@@ -67,6 +67,16 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.jsTest(block: KotlinSourceSet.()
     block(sourceSet)
 }
 
+fun NamedDomainObjectContainer<KotlinSourceSet>.wasmMain(block: KotlinSourceSet.() -> Unit) {
+    val sourceSet = findByName("wasmMain") ?: return
+    block(sourceSet)
+}
+
+fun NamedDomainObjectContainer<KotlinSourceSet>.wasmTest(block: KotlinSourceSet.() -> Unit) {
+    val sourceSet = findByName("wasmTest") ?: return
+    block(sourceSet)
+}
+
 fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(block: KotlinSourceSet.() -> Unit) {
     val sourceSet = findByName("desktopMain") ?: return
     block(sourceSet)

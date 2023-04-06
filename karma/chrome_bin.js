@@ -14,7 +14,8 @@ config.set({
                 "--disable-web-security",
                 "--disable-setuid-sandbox",
                 "--enable-logging",
-                "--v=1"
+                "--v=1",
+                "--js-flags=--experimental-wasm-gc"
             ]
         }
     },

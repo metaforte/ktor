@@ -14,5 +14,24 @@ kotlin {
                 api(project(":ktor-test-dispatcher"))
             }
         }
+
+        val jsWasmMain by creating { }
+        val jsWasmTest by creating { }
+
+        jsMain {
+            dependsOn(jsWasmMain)
+        }
+
+        jsTest {
+            dependsOn(jsWasmTest)
+        }
+
+        wasmMain {
+            dependsOn(jsWasmMain)
+        }
+
+        wasmTest {
+            dependsOn(jsWasmTest)
+        }
     }
 }

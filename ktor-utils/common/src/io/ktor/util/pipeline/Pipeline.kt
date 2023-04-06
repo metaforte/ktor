@@ -5,15 +5,15 @@
 package io.ktor.util.pipeline
 
 import io.ktor.util.*
-import io.ktor.util.collections.*
 import io.ktor.util.debug.*
-import io.ktor.util.debug.plugins.*
-import io.ktor.utils.io.concurrent.*
 import kotlinx.atomicfu.*
 import kotlin.coroutines.*
 
 internal typealias PipelineInterceptorFunction<TSubject, TContext> =
     (PipelineContext<TSubject, TContext>, TSubject, Continuation<Unit>) -> Any?
+
+internal expect inline fun <TSubject: Any, TContext: Any> PipelineInterceptor<TSubject, TContext>.toPipelineInterceptor():
+    PipelineInterceptorFunction<TSubject, TContext>
 
 /**
  * Represents an execution pipeline for asynchronous extensible computations
@@ -147,15 +147,15 @@ public open class Pipeline<TSubject : Any, TContext : Any>(
         val phaseContent = findPhase(phase)
             ?: throw InvalidPhaseException("Phase $phase was not registered for this pipeline")
 
-        @Suppress("UNCHECKED_CAST")
-        block as PipelineInterceptorFunction<TSubject, TContext>
 
-        if (tryAddToPhaseFastPath(phase, block)) {
+        val suspendBlock = block.toPipelineInterceptor()
+
+        if (tryAddToPhaseFastPath(phase, suspendBlock)) {
             interceptorsQuantity++
             return
         }
 
-        phaseContent.addInterceptor(block)
+        phaseContent.addInterceptor(suspendBlock)
         interceptorsQuantity++
         resetInterceptorsList()
 

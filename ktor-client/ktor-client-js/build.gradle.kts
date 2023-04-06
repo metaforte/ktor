@@ -7,5 +7,11 @@ kotlin {
                 api(project(":ktor-client:ktor-client-core"))
             }
         }
+
+        wasmMain {
+            dependencies {
+                api(project(":ktor-client:ktor-client-core"))
+            }
+        }
     }
 }
