@@ -27,7 +27,7 @@ internal suspend fun OutgoingContent.toDataOrStream(): Any? {
     val outputStreamPtr = nativeHeap.alloc<ObjCObjectVar<NSOutputStream?>>()
     val inputStreamPtr = nativeHeap.alloc<ObjCObjectVar<NSInputStream?>>()
 
-    NSStream.getBoundStreamsWithBufferSize(4096, inputStreamPtr.ptr, outputStreamPtr.ptr)
+    NSStream.getBoundStreamsWithBufferSize(4096U, inputStreamPtr.ptr, outputStreamPtr.ptr)
 
     val context = callContext()
     context[Job]!!.invokeOnCompletion {

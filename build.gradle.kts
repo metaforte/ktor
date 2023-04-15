@@ -234,6 +234,11 @@ allprojects.forEach {
             "-Xskip-prerelease-check",
         )
     }
+    it.tasks.withType<KotlinNativeCompile>().configureEach {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-opt-in=kotlinx.cinterop.ExperimentalForeignApi",
+        )
+    }
 }
 
 with(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin.apply(rootProject)) {

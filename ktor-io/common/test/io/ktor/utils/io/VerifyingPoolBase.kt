@@ -40,6 +40,7 @@ abstract class VerifyingPoolBase<T : Any> constructor(private val delegate: Obje
             return other.instance === this.instance
         }
 
+        @kotlin.ExperimentalStdlibApi
         override fun hashCode() = identityHashCode(instance)
     }
 }

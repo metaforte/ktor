@@ -41,6 +41,7 @@ class VerifyingChunkBufferPool(
             return other.instance === this.instance
         }
 
+        @kotlin.ExperimentalStdlibApi
         override fun hashCode() = identityHashCode(instance)
     }
 }
