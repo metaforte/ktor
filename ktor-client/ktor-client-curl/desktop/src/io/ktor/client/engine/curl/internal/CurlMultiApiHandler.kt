@@ -7,7 +7,7 @@ package io.ktor.client.engine.curl.internal
 import io.ktor.client.engine.curl.*
 import io.ktor.client.plugins.*
 import io.ktor.utils.io.core.*
-import kotlinx.atomicfu.locks.*
+import io.ktor.utils.io.locks.*
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
 import libcurl.*
@@ -48,8 +48,7 @@ internal class CurlMultiApiHandler : Closeable {
 
     fun scheduleRequest(request: CurlRequestData, deferred: CompletableDeferred<CurlSuccess>): EasyHandle {
         val easyHandle = curl_easy_init()
-            ?: throw
-            @Suppress("DEPRECATION")
+            ?: throw @Suppress("DEPRECATION")
             CurlIllegalStateException("Could not initialize an easy handle")
 
         val bodyStartedReceiving = CompletableDeferred<Unit>()
