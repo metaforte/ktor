@@ -4,9 +4,8 @@
 
 package io.ktor.server.engine.internal
 
-import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.engine.*
-import io.ktor.util.date.*
 import kotlinx.coroutines.*
 
 internal expect fun availableProcessorsBridge(): Int
@@ -15,4 +14,4 @@ internal expect val Dispatchers.IOBridge: CoroutineDispatcher
 
 internal expect fun printError(message: Any?)
 
-internal expect fun configureShutdownUrl(environment: ApplicationEnvironment, pipeline: EnginePipeline)
+internal expect fun configureShutdownUrl(config: ApplicationConfig, pipeline: EnginePipeline)

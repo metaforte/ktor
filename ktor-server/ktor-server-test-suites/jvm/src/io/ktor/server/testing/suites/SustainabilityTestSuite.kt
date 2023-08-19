@@ -780,7 +780,7 @@ abstract class SustainabilityTestSuite<TEngine : ApplicationEngine, TConfigurati
                 }
             }
         }
-        (server as BaseApplicationEngine).pipeline.intercept(phase) {
+        (server.engine as BaseApplicationEngine).pipeline.intercept(phase) {
             throw IllegalStateException("Failed in engine pipeline")
         }
         startServer(server)

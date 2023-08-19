@@ -44,7 +44,6 @@ public class TestHttpClientEngine(override val config: TestHttpClientConfig) : H
 
     @OptIn(InternalAPI::class)
     override suspend fun execute(data: HttpRequestData): HttpResponseData {
-        app.start()
         if (data.isUpgradeRequest()) {
             val (testServerCall, session) = with(data) {
                 bridge.runWebSocketRequest(url.fullPath, headers, body, callContext())
@@ -115,7 +114,6 @@ public class TestHttpClientEngine(override val config: TestHttpClientConfig) : H
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun OutgoingContent.toByteReadChannel(): ByteReadChannel = when (this) {
         is OutgoingContent.NoContent -> ByteReadChannel.Empty
         is OutgoingContent.ByteArrayContent -> ByteReadChannel(bytes())
@@ -123,6 +121,7 @@ public class TestHttpClientEngine(override val config: TestHttpClientConfig) : H
         is OutgoingContent.WriteChannelContent -> writer(coroutineContext) {
             writeTo(channel)
         }.channel
+
         is OutgoingContent.ProtocolUpgrade -> throw UnsupportedContentTypeException(this)
     }
 }

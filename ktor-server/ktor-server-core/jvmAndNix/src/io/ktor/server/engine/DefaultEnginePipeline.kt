@@ -6,12 +6,12 @@ package io.ktor.server.engine
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.engine.internal.*
 import io.ktor.server.engine.internal.ClosedChannelException
 import io.ktor.server.logging.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
-import io.ktor.util.*
 import io.ktor.util.cio.*
 import io.ktor.util.logging.*
 import io.ktor.util.pipeline.*
@@ -23,10 +23,10 @@ import kotlinx.coroutines.CancellationException
 /**
  * Default engine pipeline for all engines. Use it only if you are writing your own application engine implementation.
  */
-public fun defaultEnginePipeline(environment: ApplicationEnvironment): EnginePipeline {
-    val pipeline = EnginePipeline(environment.developmentMode)
+public fun defaultEnginePipeline(config: ApplicationConfig, developmentMode: Boolean): EnginePipeline {
+    val pipeline = EnginePipeline(developmentMode)
 
-    configureShutdownUrl(environment, pipeline)
+    configureShutdownUrl(config, pipeline)
 
     pipeline.intercept(EnginePipeline.Call) {
         try {

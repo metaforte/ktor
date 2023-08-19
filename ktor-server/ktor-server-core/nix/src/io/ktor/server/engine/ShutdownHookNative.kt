@@ -4,6 +4,7 @@
 
 package io.ktor.server.engine
 
+import io.ktor.events.*
 import kotlinx.cinterop.*
 import platform.posix.*
 import kotlin.native.concurrent.*
@@ -17,7 +18,7 @@ private val shutdownHook: FreezableAtomicReference<() -> Unit> = FreezableAtomic
  * is already stopped then there will be no hook and no [stop] function invocation possible.
  * So [stop] block will be called once or never.
  */
-public actual fun ApplicationEngine.addShutdownHook(stop: () -> Unit) {
+public actual fun ApplicationEngine.addShutdownHook(monitor: Events, stop: () -> Unit) {
     shutdownHook.value = stop
 
     signal(

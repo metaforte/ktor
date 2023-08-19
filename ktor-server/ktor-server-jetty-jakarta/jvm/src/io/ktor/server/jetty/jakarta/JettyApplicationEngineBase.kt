@@ -14,9 +14,14 @@ import org.eclipse.jetty.server.*
  * [ApplicationEngine] base type for running in a standalone Jetty
  */
 public open class JettyApplicationEngineBase(
-    environment: ApplicationEngineEnvironment,
-    configure: Configuration.() -> Unit
-) : BaseApplicationEngine(environment) {
+    environment: ApplicationEnvironment,
+    monitor: Events,
+    developmentMode: Boolean,
+    /**
+     * Application engine configuration specifying engine-specific options such as parallelism level.
+     */
+    protected val configuration: Configuration
+) : BaseApplicationEngine(environment, monitor, developmentMode) {
 
     /**
      * Jetty-specific engine configuration
@@ -29,37 +34,30 @@ public open class JettyApplicationEngineBase(
         public var configureServer: Server.() -> Unit = {}
     }
 
-    /**
-     * Application engine configuration specifying engine-specific options such as parallelism level.
-     */
-    protected val configuration: Configuration = Configuration().apply(configure)
-
     private var cancellationDeferred: CompletableJob? = null
 
     /**
      * Jetty server instance being configuring and starting
      */
     protected val server: Server = Server().apply {
-        configuration.configureServer(this)
-        initializeServer(environment)
+        this@JettyApplicationEngineBase.configuration.configureServer(this)
+        initializeServer(configuration)
     }
 
     override fun start(wait: Boolean): JettyApplicationEngineBase {
-        addShutdownHook {
+        addShutdownHook(monitor) {
             stop(configuration.shutdownGracePeriod, configuration.shutdownTimeout)
         }
-
-        environment.start()
 
         server.start()
         cancellationDeferred =
             stopServerOnCancellation(configuration.shutdownGracePeriod, configuration.shutdownTimeout)
 
-        val connectors = server.connectors.zip(environment.connectors)
+        val connectors = server.connectors.zip(configuration.connectors)
             .map { it.second.withPort((it.first as ServerConnector).localPort) }
         resolvedConnectors.complete(connectors)
 
-        environment.monitor.raiseCatching(ServerReady, environment, environment.log)
+        monitor.raiseCatching(ServerReady, environment, environment.log)
 
         if (wait) {
             server.join()
@@ -70,11 +68,10 @@ public open class JettyApplicationEngineBase(
 
     override fun stop(gracePeriodMillis: Long, timeoutMillis: Long) {
         cancellationDeferred?.complete()
-        environment.monitor.raise(ApplicationStopPreparing, environment)
+        monitor.raise(ApplicationStopPreparing, environment)
         server.stopTimeout = timeoutMillis
         server.stop()
         server.destroy()
-        environment.stop()
     }
 
     override fun toString(): String {

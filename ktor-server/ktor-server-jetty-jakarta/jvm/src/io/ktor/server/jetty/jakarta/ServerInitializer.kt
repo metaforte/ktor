@@ -12,8 +12,8 @@ import org.eclipse.jetty.http2.server.*
 import org.eclipse.jetty.server.*
 import org.eclipse.jetty.util.ssl.*
 
-internal fun Server.initializeServer(environment: ApplicationEngineEnvironment) {
-    environment.connectors.map { ktorConnector ->
+internal fun Server.initializeServer(configuration: ApplicationEngine.Configuration) {
+    configuration.connectors.map { ktorConnector ->
         val httpConfig = HttpConfiguration().apply {
             sendServerVersion = false
             sendDateHeader = false
