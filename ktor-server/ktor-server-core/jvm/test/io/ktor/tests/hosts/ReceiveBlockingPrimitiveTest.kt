@@ -4,6 +4,7 @@
 
 package io.ktor.tests.hosts
 
+import io.ktor.events.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -58,7 +59,7 @@ class ReceiveBlockingPrimitiveTest {
         }
     }
 
-    private class TestCall : BaseApplicationCall(Application(applicationEngineEnvironment {})) {
+    private class TestCall : BaseApplicationCall(Application(applicationEnvironment {}, false, "/", Events())) {
         init {
             application.receivePipeline.installDefaultTransformations()
         }

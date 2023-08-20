@@ -677,7 +677,7 @@ abstract class SustainabilityTestSuite<TEngine : ApplicationEngine, TConfigurati
                     exceptions.clear()
                 }
 
-                (server as? ApplicationEngine)?.stop(1000, 5000, TimeUnit.MILLISECONDS)
+                server.stop(1000, 5000, TimeUnit.MILLISECONDS)
             }
     }
 
@@ -716,7 +716,7 @@ abstract class SustainabilityTestSuite<TEngine : ApplicationEngine, TConfigurati
                     exceptions.clear()
                 }
 
-                (server as? ApplicationEngine)?.stop(1000, 5000, TimeUnit.MILLISECONDS)
+                server.stop(1000, 5000, TimeUnit.MILLISECONDS)
             }
     }
 
@@ -758,7 +758,7 @@ abstract class SustainabilityTestSuite<TEngine : ApplicationEngine, TConfigurati
                     exceptions.clear()
                 }
 
-                (server as? ApplicationEngine)?.stop(1000, 5000, TimeUnit.MILLISECONDS)
+                server.stop(1000, 5000, TimeUnit.MILLISECONDS)
             }
     }
 
@@ -792,7 +792,7 @@ abstract class SustainabilityTestSuite<TEngine : ApplicationEngine, TConfigurati
             exceptions.clear()
         }
 
-        (server as? ApplicationEngine)?.stop(1000, 5000, TimeUnit.MILLISECONDS)
+        server.stop(1000, 5000, TimeUnit.MILLISECONDS)
     }
 
     @OptIn(InternalAPI::class)

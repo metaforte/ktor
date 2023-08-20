@@ -52,7 +52,7 @@ public class ApplicationProperties(
 )
 
 public fun applicationProperties(
-    environment: ApplicationEnvironment,
+    environment: ApplicationEnvironment = applicationEnvironment {},
     block: ApplicationPropertiesBuilder.() -> Unit = {}
 ): ApplicationProperties {
     return ApplicationPropertiesBuilder(environment).apply(block).build()
@@ -66,7 +66,7 @@ public fun applicationProperties(
  * @param environment Instance of [ApplicationEnvironment] describing environment this application runs in
  */
 @KtorDsl
-public class Application constructor(
+public class Application(
     environment: ApplicationEnvironment,
     developmentMode: Boolean,
     public var rootPath: String,

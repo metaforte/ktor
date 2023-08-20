@@ -26,28 +26,28 @@ import kotlin.test.Test
 
 class CIOHttpsTest : TestWithKtor() {
 
-    override val server: ApplicationEngine = embeddedServer(
+    override val server: EmbeddedServer<*, *> = embeddedServer(
         Netty,
-        applicationEngineEnvironment {
-            sslConnector(
-                keyStore,
-                "sha384ecdsa",
-                { "changeit".toCharArray() },
-                { "changeit".toCharArray() }
-            ) {
-                port = serverPort
-                keyStorePath = keyStoreFile.absoluteFile
-
-                module {
-                    routing {
-                        get("/") {
-                            call.respondText("Hello, world")
-                        }
+        applicationProperties {
+            module {
+                routing {
+                    get("/") {
+                        call.respondText("Hello, world")
                     }
                 }
             }
         }
-    )
+    ) {
+        sslConnector(
+            keyStore,
+            "sha384ecdsa",
+            { "changeit".toCharArray() },
+            { "changeit".toCharArray() }
+        ) {
+            port = serverPort
+            keyStorePath = keyStoreFile.absoluteFile
+        }
+    }
 
     companion object {
         val keyStoreFile = File("build/temp.jks")

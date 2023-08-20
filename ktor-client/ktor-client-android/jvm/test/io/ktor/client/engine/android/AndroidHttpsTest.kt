@@ -26,23 +26,23 @@ import kotlin.test.*
 import kotlin.test.Test
 
 class AndroidHttpsTest : TestWithKtor() {
-    override val server: ApplicationEngine = embeddedServer(
+    override val server: EmbeddedServer<*, *> = embeddedServer(
         Netty,
-        applicationEngineEnvironment {
-            sslConnector(keyStore, "sha256ecdsa", { "changeit".toCharArray() }, { "changeit".toCharArray() }) {
-                port = serverPort
-                keyStorePath = keyStoreFile.absoluteFile
-
-                module {
-                    routing {
-                        get("/") {
-                            call.respondText("Hello, world")
-                        }
+        applicationProperties {
+            module {
+                routing {
+                    get("/") {
+                        call.respondText("Hello, world")
                     }
                 }
             }
         }
-    )
+    ) {
+        sslConnector(keyStore, "sha256ecdsa", { "changeit".toCharArray() }, { "changeit".toCharArray() }) {
+            port = serverPort
+            keyStorePath = keyStoreFile.absoluteFile
+        }
+    }
 
     companion object {
         val keyStoreFile = File("build/temp.jks")

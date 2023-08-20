@@ -4,6 +4,7 @@
 
 package io.ktor.server.logging
 
+import io.ktor.events.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlin.test.*
@@ -13,7 +14,7 @@ class MDCProviderTest {
     @Test
     fun testLogErrorWithEmptyApplication() = testApplication {
         val environment = createTestEnvironment { }
-        val application = Application(environment)
+        val application = Application(environment, false, "/", Events())
         assertNotNull(application.mdcProvider)
     }
 }

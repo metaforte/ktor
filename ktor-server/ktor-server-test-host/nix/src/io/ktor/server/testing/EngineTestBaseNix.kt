@@ -126,8 +126,8 @@ actual constructor(
         }
     }
 
-    protected actual open fun plugins(application: Application, routingConfigurer: RoutingBuilder.() -> Unit) {
-        application.install(Routing, routingConfigurer)
+    protected actual open fun plugins(application: Application, routingConfig: RoutingBuilder.() -> Unit) {
+        application.install(Routing, routingConfig)
     }
 
     protected actual fun withUrl(

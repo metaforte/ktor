@@ -390,6 +390,7 @@ public final class io/ktor/server/engine/ApplicationEngine$DefaultImpls {
 
 public final class io/ktor/server/engine/ApplicationEngineEnvironmentKt {
 	public static final fun applicationEnvironment (Lkotlin/jvm/functions/Function1;)Lio/ktor/server/application/ApplicationEnvironment;
+	public static synthetic fun applicationEnvironment$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/ktor/server/application/ApplicationEnvironment;
 }
 
 public abstract interface class io/ktor/server/engine/ApplicationEngineFactory {
@@ -403,7 +404,7 @@ public final class io/ktor/server/engine/ApplicationEngineJvmKt {
 
 public final class io/ktor/server/engine/ApplicationEnvironmentBuilder {
 	public fun <init> ()V
-	public final fun build (Lkotlin/jvm/functions/Function1;)Lio/ktor/server/application/ApplicationEnvironment;
+	public final fun build (Z)Lio/ktor/server/application/ApplicationEnvironment;
 	public final fun getClassLoader ()Ljava/lang/ClassLoader;
 	public final fun getConfig ()Lio/ktor/server/config/ApplicationConfig;
 	public final fun getLog ()Lorg/slf4j/Logger;
@@ -412,6 +413,11 @@ public final class io/ktor/server/engine/ApplicationEnvironmentBuilder {
 	public final fun setConfig (Lio/ktor/server/config/ApplicationConfig;)V
 	public final fun setLog (Lorg/slf4j/Logger;)V
 	public final fun setParentCoroutineContext (Lkotlin/coroutines/CoroutineContext;)V
+}
+
+public final class io/ktor/server/engine/ApplicationEnvironmentBuilderKt {
+	public static final fun applicationEnvironment (ZLkotlin/jvm/functions/Function1;)Lio/ktor/server/application/ApplicationEnvironment;
+	public static synthetic fun applicationEnvironment$default (ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/ktor/server/application/ApplicationEnvironment;
 }
 
 public abstract class io/ktor/server/engine/BaseApplicationCall : io/ktor/server/application/PipelineCall {
@@ -579,6 +585,7 @@ public final class io/ktor/server/engine/EmbeddedServer {
 	public final fun getEngineConfig ()Lio/ktor/server/engine/ApplicationEngine$Configuration;
 	public final fun getEnvironment ()Lio/ktor/server/application/ApplicationEnvironment;
 	public final fun getMonitor ()Lio/ktor/events/Events;
+	public final fun reload ()V
 	public final fun start (Z)V
 	public static synthetic fun start$default (Lio/ktor/server/engine/EmbeddedServer;ZILjava/lang/Object;)V
 	public final fun stop (JJ)V

@@ -8,8 +8,6 @@ import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.util.*
 import io.ktor.util.logging.*
-import io.ktor.util.network.*
-import kotlinx.coroutines.*
 import kotlin.coroutines.*
 
 /**
@@ -35,9 +33,12 @@ public expect class ApplicationEnvironmentBuilder() {
     /**
      * Build an application engine environment
      */
-    public fun build(builder: ApplicationEnvironmentBuilder.() -> Unit): ApplicationEnvironment
+    public fun build(shouldReload: Boolean): ApplicationEnvironment
 }
 
-public fun applicationEnvironment(block: ApplicationEnvironmentBuilder.() -> Unit): ApplicationEnvironment {
-    return ApplicationEnvironmentBuilder().build(block)
+public fun applicationEnvironment(
+    isReloading: Boolean = false,
+    block: ApplicationEnvironmentBuilder.() -> Unit = {}
+): ApplicationEnvironment {
+    return ApplicationEnvironmentBuilder().apply(block).build(isReloading)
 }

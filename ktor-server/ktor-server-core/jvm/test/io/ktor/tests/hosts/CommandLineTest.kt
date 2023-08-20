@@ -35,14 +35,14 @@ class CommandLineTest {
     @Test
     fun testAmendConfig() {
         val config = BaseApplicationEngine.Configuration()
-            .apply { commandLineConfig(arrayOf("-port=13698")).engineConfig(this) }
+            .apply { commandLineConfig(arrayOf("-P:ktor.deployment.port=13698")).engineConfig(this) }
         assertEquals(13698, config.connectors.single().port)
     }
 
     @Test
     fun testChangeHost() {
         val config = BaseApplicationEngine.Configuration()
-            .apply { commandLineConfig(arrayOf("-port=13698")).engineConfig(this) }
+            .apply { commandLineConfig(arrayOf("-host=test-server")).engineConfig(this) }
         assertEquals("test-server", config.connectors.single().host)
     }
 

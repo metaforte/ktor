@@ -18,31 +18,13 @@ import org.junit.*
 import java.util.concurrent.*
 
 class NettyConfigurationTest {
-    private val environment: ApplicationEngineEnvironment get() {
-        val config = MapApplicationConfig()
-        val events = Events()
-
-        val env = mockk<ApplicationEngineEnvironment>()
-        every { env.developmentMode } returns false
-        every { env.config } returns config
-        every { env.monitor } returns events
-        every { env.stop() } just Runs
-        every { env.start() } just Runs
-        every { env.connectors } returns listOf(EngineConnectorBuilder())
-        every { env.parentCoroutineContext } returns Dispatchers.Default
-        every { env.application } returns mockk<Application>().apply {
-            every { coroutineContext } returns Job()
-        }
-        every { env.log } returns KtorSimpleLogger("test-logger")
-        return env
-    }
 
     @Test
     fun configuredChildAndParentGroupShutdownGracefully() {
         val parentGroup = spyk(NioEventLoopGroup())
         val childGroup = spyk(NioEventLoopGroup())
 
-        val engine = NettyApplicationEngine(environment) {
+        val engine = EmbeddedServer(applicationProperties(), Netty) {
             configureBootstrap = {
                 group(parentGroup, childGroup)
             }
@@ -69,7 +51,7 @@ class NettyConfigurationTest {
 
         val group = stubGroup(channel)
 
-        val engine = NettyApplicationEngine(environment) {
+        val engine = EmbeddedServer(applicationProperties(), Netty) {
             configureBootstrap = {
                 channelFactory(factory)
                 group(group)
