@@ -6,41 +6,55 @@ package io.ktor.client.plugins.internal
 
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
+import kotlinx.atomicfu.*
 import kotlinx.coroutines.*
 
 internal class ByteChannelReplay(private val origin: ByteReadChannel) {
-    var content: ByteArray? = null
+    private val content: AtomicRef<CompletableDeferred<ByteArray>?> = atomic(null)
 
     @OptIn(DelicateCoroutinesApi::class)
     fun replay(): ByteReadChannel {
-        val value = content
-        if (value != null) {
-            return ByteReadChannel(value)
-        }
-
         if (origin.closedCause != null) {
             throw origin.closedCause!!
         }
 
-        return GlobalScope.writer(Dispatchers.Unconfined) {
-            val body = BytePacketBuilder()
-            try {
-                while (!origin.isClosedForRead) {
-                    if (origin.availableForRead == 0) origin.awaitContent()
-                    val packet = origin.readPacket(origin.availableForRead)
-
-                    body.writePacket(packet.copy())
-                    channel.writePacket(packet)
-                    channel.flush()
-                }
-
-                origin.closedCause?.let { throw it }
-            } catch (cause: Throwable) {
-                body.release()
-                throw cause
+        var deferred: CompletableDeferred<ByteArray>? = content.value
+        if (deferred == null) {
+            deferred = CompletableDeferred()
+            if (!content.compareAndSet(null, deferred)) {
+                deferred = content.value
+            } else {
+                return receiveBody(deferred)
             }
+        }
 
-            content = body.build().readBytes()
+        return GlobalScope.writer {
+            val body = deferred!!.await()
+            channel.writeFully(body)
         }.channel
     }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun receiveBody(
+        result: CompletableDeferred<ByteArray>
+    ): ByteReadChannel = GlobalScope.writer(Dispatchers.Unconfined) {
+        val body = BytePacketBuilder()
+        try {
+            while (!origin.isClosedForRead) {
+                if (origin.availableForRead == 0) origin.awaitContent()
+                val packet = origin.readPacket(origin.availableForRead)
+
+                body.writePacket(packet.copy())
+                channel.writePacket(packet)
+                channel.flush()
+            }
+
+            origin.closedCause?.let { throw it }
+            result.complete(body.build().readBytes())
+        } catch (cause: Throwable) {
+            body.release()
+            result.completeExceptionally(cause)
+            throw cause
+        }
+    }.channel
 }

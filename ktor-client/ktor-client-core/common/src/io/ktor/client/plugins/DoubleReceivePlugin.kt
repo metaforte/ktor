@@ -60,9 +60,11 @@ public val SaveBodyPlugin: ClientPlugin<SaveBodyPluginConfig> = createClientPlug
     "DoubleReceivePlugin",
     ::SaveBodyPluginConfig
 ) {
+    val disabled: Boolean = this@createClientPlugin.pluginConfig.disabled
 
     client.receivePipeline.intercept(HttpReceivePipeline.Before) { response ->
-        if (this@createClientPlugin.pluginConfig.disabled) return@intercept
+        if (disabled) return@intercept
+
         val attributes = response.call.attributes
         if (attributes.contains(SKIP_SAVE_BODY)) return@intercept
 
