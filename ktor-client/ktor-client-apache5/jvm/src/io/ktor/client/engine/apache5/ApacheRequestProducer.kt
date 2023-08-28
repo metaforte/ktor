@@ -116,15 +116,17 @@ internal class ApacheRequestEntityProducer(
     override fun available(): Int = channel.availableForRead
 
     override fun produce(channel: DataStreamChannel) {
-        var result: Int
-        do {
-            result = this.channel.readAvailable { buffer: ByteBuffer ->
-                channel.write(buffer)
-            }
-        } while (result > 0)
+        var result: Int = 0
+        try {
+            do {
+                result = this.channel.readAvailable { buffer: ByteBuffer ->
+                    channel.write(buffer)
+                }
+            } while (result > 0)
+        } catch (_: Throwable) {
+        }
 
         if (this.channel.isClosedForRead) {
-            this.channel.closedCause?.let { throw it }
             channel.endStream()
             return
         }

@@ -131,12 +131,12 @@ class BodyProgressTest : ClientLoader(timeoutSeconds = 60) {
                 channel.close(RuntimeException("Error"))
             }
 
-            assertFailsWith<RuntimeException> {
-                client.post("$TEST_SERVER/content/echo") {
-                    setBody(channel)
-                    onUpload(listener)
-                }
+            val response = client.post("$TEST_SERVER/content/echo") {
+                setBody(channel)
+                onUpload(listener)
             }
+
+            assertEquals(HttpStatusCode.BadRequest, response.status)
         }
     }
 

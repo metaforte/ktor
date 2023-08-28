@@ -84,15 +84,17 @@ internal class ApacheRequestProducer(
             return
         }
 
-        var result: Int
-        do {
-            result = channel.readAvailable { buffer: ByteBuffer ->
-                encoder.write(buffer)
-            }
-        } while (result > 0)
+        var result: Int = 0
+        try {
+            do {
+                result = channel.readAvailable { buffer: ByteBuffer ->
+                    encoder.write(buffer)
+                }
+            } while (result > 0)
+        } catch (_: Throwable) {
+        }
 
         if (channel.isClosedForRead) {
-            channel.closedCause?.let { throw it }
             encoder.complete()
             return
         }

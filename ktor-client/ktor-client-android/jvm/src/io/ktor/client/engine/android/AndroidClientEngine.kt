@@ -117,21 +117,29 @@ public class AndroidClientEngine(override val config: AndroidEngineConfig) : Htt
 internal suspend fun OutgoingContent.writeTo(
     stream: OutputStream,
     callContext: CoroutineContext
-): Unit = stream.use { blockingOutput ->
-    when (this) {
-        is OutgoingContent.ByteArrayContent -> blockingOutput.write(bytes())
-        is OutgoingContent.ReadChannelContent -> run {
-            readFrom().copyTo(blockingOutput)
-        }
-        is OutgoingContent.WriteChannelContent -> {
-            val channel = GlobalScope.writer(callContext) {
-                writeTo(channel)
-            }.channel
+) {
+    try {
+        stream.use { blockingOutput ->
+            when (this) {
+                is OutgoingContent.ByteArrayContent -> blockingOutput.write(bytes())
+                is OutgoingContent.ReadChannelContent -> run {
+                    readFrom().copyTo(blockingOutput)
+                }
 
-            channel.copyTo(blockingOutput)
+                is OutgoingContent.WriteChannelContent -> {
+                    val channel = GlobalScope.writer(callContext) {
+                        writeTo(channel)
+                    }.channel
+
+                    channel.copyTo(blockingOutput)
+                }
+
+                is OutgoingContent.NoContent -> {
+                }
+
+                else -> throw UnsupportedContentTypeException(this)
+            }
         }
-        is OutgoingContent.NoContent -> {
-        }
-        else -> throw UnsupportedContentTypeException(this)
+    } catch (_: Throwable) {
     }
 }

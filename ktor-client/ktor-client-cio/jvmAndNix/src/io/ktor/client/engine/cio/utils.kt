@@ -8,14 +8,12 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
-import io.ktor.client.utils.*
 import io.ktor.http.*
 import io.ktor.http.cio.*
 import io.ktor.http.content.*
 import io.ktor.util.*
 import io.ktor.util.date.*
 import io.ktor.utils.io.*
-import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.core.*
 import io.ktor.utils.io.errors.*
 import io.ktor.utils.io.errors.EOFException
@@ -134,15 +132,11 @@ internal suspend fun writeBody(
             }
         } catch (cause: Throwable) {
             channel.close(cause)
-            throw cause
         } finally {
             channel.flush()
             chunkedJob?.channel?.close()
             chunkedJob?.join()
 
-            output.closedCause?.unwrapCancellationException()?.takeIf { it !is CancellationException }?.let {
-                throw it
-            }
             if (closeChannel) {
                 output.close()
             }

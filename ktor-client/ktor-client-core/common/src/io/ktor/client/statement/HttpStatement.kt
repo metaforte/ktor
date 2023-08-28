@@ -124,7 +124,7 @@ public class HttpStatement(
      * Completes [HttpResponse] and releases resources.
      */
     @PublishedApi
-    @OptIn(InternalAPI::class)
+    @OptIn(InternalAPI::class, InternalCoroutinesApi::class)
     internal suspend fun HttpResponse.cleanup() {
         val job = coroutineContext[Job]!! as CompletableJob
 

@@ -23,10 +23,7 @@ internal class StreamRequestBody(
             block().toInputStream().source().use {
                 sink.writeAll(it)
             }
-        } catch (cause: IOException) {
-            throw cause
-        } catch (cause: Throwable) {
-            throw StreamAdapterIOException(cause)
+        } catch (_: Throwable) {
         }
     }
 

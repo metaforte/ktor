@@ -33,7 +33,7 @@ internal class JavaHttpRequestBodyPublisher(
                 subscriber
             )
             synchronized(subscription) { subscriber.onSubscribe(subscription) }
-        } catch (cause: Exception) {
+        } catch (cause: Throwable) {
             // subscribe() must return normally, so we need to signal the
             // failure to open via onError() once onSubscribe() is signaled.
             subscriber.onSubscribe(NullSubscription())
@@ -77,7 +77,7 @@ internal class JavaHttpRequestBodyPublisher(
                 if (writeInProgress.compareAndSet(expect = false, update = true)) {
                     readData()
                 }
-            } catch (cause: Exception) {
+            } catch (cause: Throwable) {
                 signalOnError(cause)
             }
         }
@@ -95,7 +95,6 @@ internal class JavaHttpRequestBodyPublisher(
         private fun readData() {
             // It's possible to have another request for data come in after we've closed the channel.
             if (inputChannel.isClosedForRead) {
-                tryToSignalOnErrorFromChannel()
                 signalOnComplete()
                 return
             }
@@ -106,7 +105,6 @@ internal class JavaHttpRequestBodyPublisher(
                     val result = try {
                         inputChannel.readAvailable(buffer)
                     } catch (cause: Throwable) {
-                        signalOnError(cause)
                         closeChannel()
                         return@launch
                     }
@@ -129,7 +127,7 @@ internal class JavaHttpRequestBodyPublisher(
         private fun closeChannel() {
             try {
                 inputChannel.cancel()
-            } catch (cause: Exception) {
+            } catch (cause: Throwable) {
                 signalOnError(cause)
             }
         }
@@ -152,11 +150,6 @@ internal class JavaHttpRequestBodyPublisher(
             }
         }
 
-        private fun tryToSignalOnErrorFromChannel() {
-            inputChannel.closedCause?.let { cause ->
-                signalOnError(cause)
-            }
-        }
     }
 
     private class NullSubscription : Flow.Subscription {

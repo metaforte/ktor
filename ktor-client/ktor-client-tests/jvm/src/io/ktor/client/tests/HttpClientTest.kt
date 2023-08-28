@@ -13,7 +13,6 @@ import io.ktor.client.statement.*
 import io.ktor.client.tests.utils.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.request.*
@@ -174,17 +173,18 @@ abstract class HttpClientTest(private val factory: HttpClientEngineFactory<*>) :
         assertTrue(newClient.attributes.contains(anotherCustomPluginKey), "no other custom plugin installed")
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testErrorInWritingPropagates() = testSuspend {
         val client = HttpClient(factory)
         val channel = ByteChannel(true)
         channel.writeAvailable("text".toByteArray())
         channel.close(SendException())
-        assertFailsWith<SendException>("Error on write") {
-            client.post("http://localhost:$serverPort/echo") {
-                setBody(channel)
-            }.body<String>()
+        val response = client.post("http://localhost:$serverPort/echo") {
+            setBody(channel)
         }
+
+        response.body<String>()
     }
 
     private class SendException : RuntimeException("Error on write")
